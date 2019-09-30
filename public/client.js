@@ -34,6 +34,20 @@ const appendNewDream = function(dream) {
   dreamsList.appendChild(newListItem);
 }
 
+// function that inserts dream into the sqlite database
+const insertDream = (dream) => {
+  const http = new XMLHttpRequest();
+  const url = '/insertDream';
+
+  http.open("POST", url);
+  http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  const dreamToInsert = {};
+  dreamToInsert.dream = dream;
+console.log(dreamToInsert);  
+
+  http.send(JSON.stringify(dreamToInsert));
+}
+
 // listen for the form to be submitted and add a new dream when it is
 dreamsForm.onsubmit = function(event) {
   // stop our form submission from refreshing the page
@@ -42,6 +56,9 @@ dreamsForm.onsubmit = function(event) {
   // get dream value and add it to the list
   dreams.push(dreamInput.value);
   appendNewDream(dreamInput.value);
+
+  // call API to insert dream into the database
+  insertDream(dreamInput.value);
 
   // reset form 
   dreamInput.value = '';
