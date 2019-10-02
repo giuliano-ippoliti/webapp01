@@ -1,7 +1,7 @@
 Webapp01
 =================
 
-Inspired by *Glitch*
+Inspired by *Glitch*.
 
 Find out more [about Glitch](https://glitch.com/about).
 
