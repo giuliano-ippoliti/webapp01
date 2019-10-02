@@ -2,18 +2,32 @@
 // where your node app starts
 
 // init project
+
+// Express web framework for Node.js: https://expressjs.com/
+// express is a function
 var express = require('express');
+
+// Node.js body parsing middleware.
+// Parse incoming request bodies in a middleware before your handlers, available under the req.body property
 var bodyParser = require('body-parser');
+
+// Read environment varibale in .env (PORT, ...)
+const dotenv = require('dotenv');
+dotenv.config();
+
+// Web application instance
 var app = express();
+
+// Express Middlewares
+
+// parse URL-encoded forme
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//for parsing JSON
-app.use(express.json());
-
-// we've started you off with Express, 
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
+// parse JSON
+app.use(bodyParser.json());
 
 // http://expressjs.com/en/starter/static-files.html
+// Now we can use files in the public folder, without prefix (cf: app.use('/static', express.static('public')); )
 app.use(express.static('public'));
 
 // init sqlite db
@@ -23,7 +37,7 @@ var exists = fs.existsSync(dbFile);
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(dbFile);
 
-// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+// if ./.data/sqlite.db does not exist, create it, otherwise print records to console (but you need the .data folder)
 db.serialize( () => {
   if (!exists) {
     db.run('CREATE TABLE Dreams (dream TEXT)');
@@ -50,16 +64,15 @@ app.get('/', (request, response) => {
 });
 
 // endpoint to get all the dreams in the database
-// currently this is the only endpoint, ie. adding dreams won't update the database
-// read the sqlite3 module docs and try to add your own! https://www.npmjs.com/package/sqlite3
 app.get('/getDreams', (request, response) => {
   db.all('SELECT * from Dreams', (err, rows) => {
     response.send(JSON.stringify(rows));
   });
 });
 
+// endpoint to insert a dream into the database
 app.post('/insertDream', (request, response) => {
-// thanks to the express.json middleware, we are able to parse the body, which includes the new dream
+// thanks to the json middleware, we are able to parse the body, which includes the new dream
   const NewDream = request.body.dream;
   db.run(`INSERT into Dreams VALUES(?)`, [NewDream], (err) => {
     if (err) {
@@ -70,7 +83,7 @@ app.post('/insertDream', (request, response) => {
   });
 });
 
-// listen for requests :)
+// listen for requests
 var listener = app.listen(process.env.PORT, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });

@@ -18,5 +18,7 @@ git clone https://github.com/giuliano-ippoliti/webapp01.git
 
 npm install
 
+Edit .env file with PORT=<listen port>
+
 npm start
 
