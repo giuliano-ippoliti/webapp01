@@ -1,36 +1,63 @@
 // client-side js
 // run by the browser each time your view template referencing it is loaded
 
-console.log('hello world :o');
+console.log('client.js loading...');
 
+// Start with an empty array
 let dreams = [];
 
 // define variables that reference elements on our page
+
+// unordered (bulleted) list
 const dreamsList = document.getElementById('dreams');
+
+// form (including input text field and submit button)
 const dreamsForm = document.forms[0];
+
+// input text field
 const dreamInput = dreamsForm.elements['dream'];
 
-// a helper function to call when our request for dreams is done
+// a helper function to call when our request for dreams is done (callback)
 const getDreamsListener = function() {
-  // parse our response to convert to JSON
-  dreams = JSON.parse(this.responseText);
+  // parse our response (from /getDreams) to convert to JSON
+
+  // this: XMLHttpRequest to /getDreams
+  // the response property is text : [{"dream":"Find and count some sheep"}, ... ]
+  // dreams is an array of objects : [0] -> { dream: "Find and count some sheep" }, ...
+  dreams = JSON.parse(this.response);
 
   // iterate through every dream and add it to our page
-  dreams.forEach( function(row) {
+  dreams.forEach( (row) => {
     appendNewDream(row.dream);
   });
 }
 
 // request the dreams from our app's sqlite database
+
+// Use XMLHttpRequest (XHR) objects to interact with servers
 const dreamRequest = new XMLHttpRequest();
+
+// XMLHttpRequest.onload = callback;
+// callback is the function to be executed when the request completes successfully.
+// The value of this (i.e. the context) is the same XMLHttpRequest this callback is related to.
 dreamRequest.onload = getDreamsListener;
+
+// XMLHttpRequest.open(method, url[, async[, user[, password]]])
 dreamRequest.open('get', '/getDreams');
+
+// send the request to the server.
+// If the request is asynchronous (which is the default), this method returns as soon as the request is sent
+// and the result is delivered using events (cf: onload)
 dreamRequest.send();
 
 // a helper function that creates a list item for a given dream
-const appendNewDream = function(dream) {
+const appendNewDream = (dream) => {
   const newListItem = document.createElement('li');
+
+  // beware of XSS!
+  // https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
   newListItem.innerHTML = dream;
+
   dreamsList.appendChild(newListItem);
 }
 
@@ -43,7 +70,8 @@ const insertDream = (dream) => {
   http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   const dreamToInsert = {};
   dreamToInsert.dream = dream;
-console.log(dreamToInsert);  
+
+  console.log(dreamToInsert);  
 
   http.send(JSON.stringify(dreamToInsert));
 }
