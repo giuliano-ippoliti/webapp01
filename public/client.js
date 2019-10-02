@@ -50,13 +50,21 @@ dreamRequest.open('get', '/getDreams');
 // and the result is delivered using events (cf: onload)
 dreamRequest.send();
 
+// OWASP : Except for alphanumeric characters, escape all characters with ASCII values less than 256 with the &#xHH; format (or a named entity if available) to prevent switching out of the attribute.
+const OWASPescape = (str) => {
+  return str.replace(/[%*+,-/;<=>^|]/g, '-');
+} 
+
 // a helper function that creates a list item for a given dream
 const appendNewDream = (dream) => {
   const newListItem = document.createElement('li');
 
   // beware of XSS!
   // https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
-  newListItem.innerHTML = dream;
+console.log(dream);
+  var sanitizedDream = OWASPescape(dream);
+console.log(sanitizedDream);
+  newListItem.innerHTML = sanitizedDream;
 
   dreamsList.appendChild(newListItem);
 }
